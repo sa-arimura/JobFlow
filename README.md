@@ -17,14 +17,21 @@ JobFlowは、求職活動で増えていく応募先・選考状況・返信待�
 
 ## 画面イメージ
 
-公開用スクリーンショットは、実際の応募情報を含まない安全なサンプルを用意できた段階で追加します。
+### 応募一覧（A:M）
 
-```text
-docs/images/dashboard.png
-docs/images/analysis.png
-```
+![応募一覧（A:M）](docs/images/applications-main.png)
 
-現時点では画像ファイルを同梱していません。
+### 応募一覧（N:AA）
+
+![応募一覧（N:AA）](docs/images/applications-detail.png)
+
+### ダッシュボード
+
+![ダッシュボード](docs/images/dashboard.png)
+
+### 分析
+
+![分析](docs/images/analysis.png)
 
 ## 工夫した点
 
