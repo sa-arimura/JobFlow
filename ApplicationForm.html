@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <style>
+      body {
+        box-sizing: border-box;
+        color: #202124;
+        font-family: Arial, "Noto Sans JP", sans-serif;
+        margin: 0;
+        padding: 16px;
+      }
+
+      h1 {
+        color: #1f4e78;
+        font-size: 18px;
+        margin: 0 0 8px;
+      }
+
+      .description {
+        color: #5f6368;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+
+      .field {
+        margin-bottom: 12px;
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+
+      .required {
+        color: #c5221f;
+        font-weight: normal;
+      }
+
+      input,
+      select,
+      textarea {
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+        padding: 8px;
+        width: 100%;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #1a73e8;
+        outline: none;
+      }
+
+      input[readonly] {
+        background: #f1f3f4;
+        color: #5f6368;
+      }
+
+      textarea {
+        min-height: 72px;
+        resize: vertical;
+      }
+
+      .section-title {
+        border-top: 1px solid #dadce0;
+        color: #1f4e78;
+        font-size: 15px;
+        margin: 20px 0 12px;
+        padding-top: 14px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 9px 14px;
+      }
+
+      #saveButton {
+        background: #1f4e78;
+        color: #fff;
+      }
+
+      #cancelButton {
+        background: #f1f3f4;
+        color: #3c4043;
+      }
+
+      button:disabled {
+        cursor: default;
+        opacity: 0.6;
+      }
+
+      #message {
+        border-radius: 4px;
+        display: none;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-top: 14px;
+        padding: 10px;
+        white-space: pre-wrap;
+      }
+
+      #message.error {
+        background: #fce8e6;
+        color: #c5221f;
+        display: block;
+      }
+
+      #message.success {
+        background: #e6f4ea;
+        color: #137333;
+        display: block;
+      }
+    </style>
+  </head>
+  <body
+    data-mode="<?= mode ?>"
+    data-application-id="<?= applicationId ?>"
+  >
+    <h1 id="formTitle">応募情報</h1>
+    <p class="description">
+      会社名と職種は必須です。入力内容は保存時にもGAS側で検証されます。
+    </p>
+
+    <form id="applicationForm" novalidate>
+      <div class="field" id="applicationIdField" hidden>
+        <label for="applicationId">応募ID</label>
+        <input id="applicationId" name="applicationId" type="text" readonly>
+      </div>
+
+      <div class="field">
+        <label for="companyName">
+          会社名 <span class="required">必須</span>
+        </label>
+        <input id="companyName" name="companyName" type="text" maxlength="200" required>
+      </div>
+
+      <div class="field">
+        <label for="jobTitle">
+          職種 <span class="required">必須</span>
+        </label>
+        <input id="jobTitle" name="jobTitle" type="text" maxlength="200" required>
+      </div>
+
+      <div class="field">
+        <label for="jobUrl">求人URL</label>
+        <input id="jobUrl" name="jobUrl" type="url" maxlength="1000" placeholder="https://example.com/job">
+      </div>
+
+      <div class="field">
+        <label for="applicationDate">応募日</label>
+        <input id="applicationDate" name="applicationDate" type="date">
+      </div>
+
+      <div class="field">
+        <label for="applicationSite">応募サイト</label>
+        <input id="applicationSite" name="applicationSite" type="text" maxlength="200">
+      </div>
+
+      <div class="field">
+        <label for="contactPerson">担当者</label>
+        <input id="contactPerson" name="contactPerson" type="text" maxlength="200">
+      </div>
+
+      <div class="field">
+        <label for="selectionStatus">選考状況</label>
+        <select id="selectionStatus" name="selectionStatus" required></select>
+      </div>
+
+      <h2 class="section-title">連絡・予定</h2>
+
+      <div class="field">
+        <label for="waitingStatus">対応待ち</label>
+        <select id="waitingStatus" name="waitingStatus" required></select>
+      </div>
+
+      <div class="field">
+        <label for="lastReplyDate">最終返信日</label>
+        <input id="lastReplyDate" name="lastReplyDate" type="date">
+      </div>
+
+      <div class="field">
+        <label for="nextScheduleDate">次回予定日</label>
+        <input id="nextScheduleDate" name="nextScheduleDate" type="date">
+      </div>
+
+      <div class="field">
+        <label for="interviewDateTime">面接日時</label>
+        <input
+          id="interviewDateTime"
+          name="interviewDateTime"
+          type="datetime-local"
+          step="60"
+        >
+      </div>
+
+      <div class="field">
+        <label for="memo">メモ</label>
+        <textarea id="memo" name="memo"></textarea>
+      </div>
+
+      <h2 class="section-title">提出物</h2>
+
+      <div class="field">
+        <label for="resumeStatus">履歴書</label>
+        <select id="resumeStatus" name="resumeStatus" required></select>
+      </div>
+
+      <div class="field">
+        <label for="workHistoryStatus">職務経歴書</label>
+        <select id="workHistoryStatus" name="workHistoryStatus" required></select>
+      </div>
+
+      <div class="field">
+        <label for="portfolioStatus">ポートフォリオ</label>
+        <select id="portfolioStatus" name="portfolioStatus" required></select>
+      </div>
+
+      <div class="field">
+        <label for="otherSubmissionStatus">その他提出物</label>
+        <select id="otherSubmissionStatus" name="otherSubmissionStatus" required></select>
+      </div>
+
+      <div class="field">
+        <label for="submissionDeadline">提出期限</label>
+        <input id="submissionDeadline" name="submissionDeadline" type="date">
+      </div>
+
+      <div class="field">
+        <label for="submissionDate">提出日</label>
+        <input id="submissionDate" name="submissionDate" type="date">
+      </div>
+
+      <div class="field">
+        <label for="submissionMemo">提出物メモ</label>
+        <textarea id="submissionMemo" name="submissionMemo" maxlength="2000"></textarea>
+      </div>
+
+      <div class="actions">
+        <button id="saveButton" type="submit">保存</button>
+        <button id="cancelButton" type="button">キャンセル</button>
+      </div>
+    </form>
+
+    <div id="message" role="status" aria-live="polite"></div>
+
+    <script>
+      const mode = document.body.dataset.mode;
+      const initialApplicationId = document.body.dataset.applicationId;
+      const form = document.getElementById('applicationForm');
+      const saveButton = document.getElementById('saveButton');
+      const messageElement = document.getElementById('message');
+      let validWaitingStatuses = [];
+
+      document.addEventListener('DOMContentLoaded', initializeForm);
+      form.addEventListener('submit', submitForm);
+      document
+        .getElementById('cancelButton')
+        .addEventListener('click', closeSidebar);
+
+      function initializeForm() {
+        document.getElementById('formTitle').textContent =
+          mode === 'edit' ? '応募情報を編集' : '応募情報を登録';
+        document.getElementById('applicationIdField').hidden = mode !== 'edit';
+
+        setBusy(true);
+        google.script.run
+          .withSuccessHandler(applyFormContext)
+          .withFailureHandler(showServerError)
+          .getApplicationFormContext(mode, initialApplicationId);
+      }
+
+      function applyFormContext(context) {
+        const statusSelect = document.getElementById('selectionStatus');
+        statusSelect.textContent = '';
+
+        context.statuses.forEach(function(status) {
+          const option = document.createElement('option');
+          option.value = status;
+          option.textContent = status;
+          statusSelect.appendChild(option);
+        });
+
+        validWaitingStatuses = context.waitingStatuses.slice();
+        const waitingStatusSelect = document.getElementById('waitingStatus');
+        waitingStatusSelect.textContent = '';
+        context.waitingStatuses.forEach(function(status) {
+          const option = document.createElement('option');
+          option.value = status;
+          option.textContent = status;
+          waitingStatusSelect.appendChild(option);
+        });
+
+        [
+          'resumeStatus',
+          'workHistoryStatus',
+          'portfolioStatus',
+          'otherSubmissionStatus'
+        ].forEach(function(id) {
+          const select = document.getElementById(id);
+          select.textContent = '';
+          if (mode === 'edit') {
+            const blankOption = document.createElement('option');
+            blankOption.value = '';
+            blankOption.textContent = '未設定';
+            select.appendChild(blankOption);
+          }
+          context.submissionStatuses.forEach(function(status) {
+            const option = document.createElement('option');
+            option.value = status;
+            option.textContent = status;
+            select.appendChild(option);
+          });
+        });
+
+        if (context.application) {
+          Object.keys(context.application).forEach(function(key) {
+            const input = document.getElementById(key);
+            if (input) {
+              input.value = context.application[key] || '';
+            }
+          });
+        } else {
+          waitingStatusSelect.value = context.waitingDefaultStatus;
+          document.getElementById('resumeStatus').value =
+            context.submissionDefaults.RESUME_STATUS;
+          document.getElementById('workHistoryStatus').value =
+            context.submissionDefaults.WORK_HISTORY_STATUS;
+          document.getElementById('portfolioStatus').value =
+            context.submissionDefaults.PORTFOLIO_STATUS;
+          document.getElementById('otherSubmissionStatus').value =
+            context.submissionDefaults.OTHER_SUBMISSION_STATUS;
+        }
+        setBusy(false);
+      }
+
+      function submitForm(event) {
+        event.preventDefault();
+        clearMessage();
+
+        const formData = collectFormData();
+        const clientError = validateOnClient(formData);
+        if (clientError) {
+          showMessage(clientError, 'error');
+          return;
+        }
+
+        setBusy(true);
+        const runner = google.script.run
+          .withSuccessHandler(handleSaveSuccess)
+          .withFailureHandler(showServerError);
+
+        if (mode === 'edit') {
+          runner.updateApplication(formData);
+        } else {
+          runner.registerApplication(formData);
+        }
+      }
+
+      function collectFormData() {
+        return {
+          applicationId: document.getElementById('applicationId').value,
+          companyName: document.getElementById('companyName').value.trim(),
+          jobTitle: document.getElementById('jobTitle').value.trim(),
+          jobUrl: document.getElementById('jobUrl').value.trim(),
+          applicationDate: document.getElementById('applicationDate').value,
+          applicationSite: document.getElementById('applicationSite').value.trim(),
+          contactPerson: document.getElementById('contactPerson').value.trim(),
+          selectionStatus: document.getElementById('selectionStatus').value,
+          waitingStatus: document.getElementById('waitingStatus').value,
+          lastReplyDate: document.getElementById('lastReplyDate').value,
+          nextScheduleDate: document.getElementById('nextScheduleDate').value,
+          interviewDateTime:
+            document.getElementById('interviewDateTime').value,
+          memo: document.getElementById('memo').value.trim(),
+          resumeStatus: document.getElementById('resumeStatus').value,
+          workHistoryStatus: document.getElementById('workHistoryStatus').value,
+          portfolioStatus: document.getElementById('portfolioStatus').value,
+          otherSubmissionStatus:
+            document.getElementById('otherSubmissionStatus').value,
+          submissionDeadline:
+            document.getElementById('submissionDeadline').value,
+          submissionDate: document.getElementById('submissionDate').value,
+          submissionMemo: document.getElementById('submissionMemo').value.trim()
+        };
+      }
+
+      function validateOnClient(data) {
+        if (!data.companyName) {
+          return '会社名を入力してください。';
+        }
+        if (!data.jobTitle) {
+          return '職種を入力してください。';
+        }
+        if (data.applicationDate && !isValidDateInput(data.applicationDate)) {
+          return '応募日は有効な日付を入力してください。';
+        }
+        if (data.lastReplyDate && !isValidDateInput(data.lastReplyDate)) {
+          return '最終返信日は有効な日付を入力してください。';
+        }
+        if (data.nextScheduleDate && !isValidDateInput(data.nextScheduleDate)) {
+          return '次回予定日は有効な日付を入力してください。';
+        }
+        if (data.interviewDateTime &&
+            !isValidDateTimeInput(data.interviewDateTime)) {
+          return '面接日時は有効な日時を入力してください。';
+        }
+        if (data.jobUrl) {
+          try {
+            const parsedUrl = new URL(data.jobUrl);
+            if (parsedUrl.protocol !== 'http:' &&
+                parsedUrl.protocol !== 'https:') {
+              return '求人URLはhttpまたはhttpsのURLを入力してください。';
+            }
+          } catch (error) {
+            return '求人URLは有効なURLを入力してください。';
+          }
+        }
+        if (!data.selectionStatus) {
+          return '選考状況を選択してください。';
+        }
+        if (!data.waitingStatus ||
+            validWaitingStatuses.indexOf(data.waitingStatus) === -1) {
+          return '対応待ちは、なし・企業待ち・自分対応から選択してください。';
+        }
+        if (mode !== 'edit' &&
+            (!data.resumeStatus ||
+             !data.workHistoryStatus ||
+             !data.portfolioStatus ||
+             !data.otherSubmissionStatus)) {
+          return '提出物の状態を選択してください。';
+        }
+        if (data.submissionDeadline &&
+            !/^\d{4}-\d{2}-\d{2}$/.test(data.submissionDeadline)) {
+          return '提出期限は有効な日付を入力してください。';
+        }
+        if (data.submissionDate &&
+            !/^\d{4}-\d{2}-\d{2}$/.test(data.submissionDate)) {
+          return '提出日は有効な日付を入力してください。';
+        }
+        return '';
+      }
+
+      function isValidDateInput(value) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          return false;
+        }
+        const parts = value.split('-').map(Number);
+        const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+        return date.getUTCFullYear() === parts[0] &&
+          date.getUTCMonth() === parts[1] - 1 &&
+          date.getUTCDate() === parts[2];
+      }
+
+      function isValidDateTimeInput(value) {
+        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+          return false;
+        }
+        const parts = value.split(/[-T:]/).map(Number);
+        if (parts[3] > 23 || parts[4] > 59) {
+          return false;
+        }
+        const date = new Date(Date.UTC(
+          parts[0],
+          parts[1] - 1,
+          parts[2],
+          parts[3],
+          parts[4]
+        ));
+        return date.getUTCFullYear() === parts[0] &&
+          date.getUTCMonth() === parts[1] - 1 &&
+          date.getUTCDate() === parts[2] &&
+          date.getUTCHours() === parts[3] &&
+          date.getUTCMinutes() === parts[4];
+      }
+
+      function handleSaveSuccess(result) {
+        showMessage(result.message + '\n応募ID: ' + result.applicationId, 'success');
+        setBusy(false);
+
+        if (mode === 'create') {
+          form.reset();
+          document.getElementById('selectionStatus').selectedIndex = 0;
+          document.getElementById('resumeStatus').value = '未提出';
+          document.getElementById('workHistoryStatus').value = '未提出';
+          document.getElementById('portfolioStatus').value = '不要';
+          document.getElementById('otherSubmissionStatus').value = '不要';
+        }
+      }
+
+      function showServerError(error) {
+        const message = error && error.message
+          ? error.message
+          : '処理に失敗しました。時間をおいて再度お試しください。';
+        showMessage(message, 'error');
+        setBusy(false);
+      }
+
+      function showMessage(message, type) {
+        // textContentを使い、入力値をHTMLとして解釈させないことでXSSを防ぎます。
+        messageElement.textContent = message;
+        messageElement.className = type;
+      }
+
+      function clearMessage() {
+        messageElement.textContent = '';
+        messageElement.className = '';
+      }
+
+      function setBusy(isBusy) {
+        saveButton.disabled = isBusy;
+      }
+
+      function closeSidebar() {
+        google.script.host.close();
+      }
+    </script>
+  </body>
+</html>
