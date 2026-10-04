@@ -1,0 +1,8 @@
+# Local and diagnostic files
+*.log
+Stage9*Diagnostic.gs
+Setup_stage8_diagnostic*.gs
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
